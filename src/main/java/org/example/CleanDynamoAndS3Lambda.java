@@ -45,8 +45,12 @@ public class CleanDynamoAndS3Lambda implements RequestHandler<Map<String, String
         for (S3Object s3Object : listResponse.contents()) {
             String key = s3Object.key();
             if (key.contains("/")) { // only delete if key includes a '/'
-                System.out.println("Deleting S3 Object (inside folder): " + key);
-                objectsToDelete.add(ObjectIdentifier.builder().key(key).build());
+                if (key.startsWith("cost-usage-report/")) {
+                    System.out.println("Skipping cost-usage-report folder: " + key);
+                } else {
+                    System.out.println("Deleting S3 Object (inside folder): " + key);
+                    objectsToDelete.add(ObjectIdentifier.builder().key(key).build());
+                }
             } else {
                 System.out.println("Skipping top-level object: " + key);
             }
